@@ -21,6 +21,7 @@ app.get('/notes',(req,res)=>{
     res.sendFile(path.join(__dirname,'./public/notes.html'))
 })
 
+//Read notes
 const readNotes = async () => {
     try {
         var data = await fs.readFile("./db/db.json", "utf-8")
@@ -32,7 +33,7 @@ const readNotes = async () => {
     }
 }
 
-
+//Write notes
 const writeNotes = async (newNotes) => {
     try {
         await fs.writeFile("./db/db.json", JSON.stringify(newNotes))
@@ -43,6 +44,7 @@ const writeNotes = async (newNotes) => {
     }
 }
 
+// GET route for Notes data
 app.get("/api/notes", async (req,res)=> {
     const notes = await readNotes()
     res.json(notes)
@@ -71,15 +73,15 @@ app.post('/api/notes',async (req,res)=>{
 
 //DELETE route to delete note
 app.delete('/api/notes/:id',async (req,res)=>{
-        const noteID = req.params.id
+    const noteID = req.params.id
     var currentNotes = await readNotes()
-    // reasearch the filer method on objects by a key
-    //when you get your new array, write that
+    var newNotesArr = currentNotes.filter(note => note.id !==noteID)
+
     var successfulWrite = await writeNotes(newNotesArr)
     if(successfulWrite){
-        return res.json('Note added successfully');
+        return res.json('Note deleted successfully');
     }
-    return res.json("Error in adding note")
+    return res.json('Error in deleting note')
 })
 
 app.listen(PORT,()=>
